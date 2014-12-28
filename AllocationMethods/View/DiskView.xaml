@@ -1,0 +1,310 @@
+﻿<UserControl x:Class="AllocationMethods.View.DiskView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:Services="clr-namespace:AllocationMethods.Services"
+             xmlns:Models="clr-namespace:AllocationMethods.Model"
+             mc:Ignorable="d" 
+             d:DesignHeight="1000" d:DesignWidth="500"
+             DataContext="{Binding Disk, Source={StaticResource Locator}}">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="64"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <!--======TITLE ======-->
+        <TextBlock
+            Grid.Row="0"
+            Text="{Binding Title}"
+            Style="{StaticResource TitleTextBlockStyle}"/>
+        <!--======DESCRIPTION ======-->
+        <TextBlock Margin="4" 
+                   Grid.Row="1" 
+                   TextWrapping="WrapWithOverflow" 
+                   Text="Represents the storage disk. Each block shows a files status (Hover to get more info). Green displays occupied block. Orange shows a block in use."/>
+        <!--======LISTBOX ======-->
+        <ListBox ItemsSource="{Binding BlockCollection}"
+                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                 ItemContainerStyle="{DynamicResource ListBoxItemStyle1}"
+                 Grid.Row="2" Background="Transparent">
+            <ListBox.Resources>
+                <!--=======STYLE TO REMOVE SELECTION ============-->
+                <Style x:Key="ListBoxItemStyle1" TargetType="{x:Type ListBoxItem}">
+                    <Setter Property="Background" Value="Transparent"/>
+                    <Setter Property="Padding" Value="2,0,0,0"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                                <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" 
+                            BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" 
+                            Padding="{TemplateBinding Padding}" SnapsToDevicePixels="true">
+                                    <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
+                            SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" 
+                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsSelected" Value="true">
+                                        <Setter Property="Background" TargetName="Bd" Value="WhiteSmoke"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+
+                <!-- ====================STANDARD============================ -->
+                <DataTemplate x:Key="FileBlockTemplate">
+                    <Border CornerRadius="4,4,4,4" 
+                            BorderBrush="Red" 
+                            BorderThickness="5" 
+                            Margin="3" 
+                            RenderOptions.EdgeMode="Aliased">
+                        <StackPanel x:Name="ErrorPanel"
+                                    Background="Red">
+                            <TextBlock
+                                Margin="1"
+                                FontSize="18"
+                                FontWeight="Bold"
+                                TextAlignment="Center" 
+                                Text="{Binding BlockAddress}"/>
+                            <StackPanel x:Name="File" Background="Red">
+                                <Rectangle x:Name="Error" 
+                                       Height="48" 
+                                       Width="48" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </DataTemplate>
+                <!-- ====================CONTIGUOUS============================ -->
+                <DataTemplate x:Key="ContiguousFileBlockTemplate" DataType="{x:Type Models:ContiguousFileBlock}">
+                    <Border CornerRadius="4,4,4,4" 
+                            BorderBrush="LightGray" 
+                            BorderThickness="5" 
+                            Margin="3" 
+                            RenderOptions.EdgeMode="Aliased">
+                        <StackPanel x:Name="FileBlockStackPanel"
+                                    Background="LightGray">
+                            <TextBlock
+                                Margin="1"
+                                FontSize="18"
+                                FontWeight="Bold"
+                                TextAlignment="Center" 
+                                Text="{Binding BlockAddress}"/>
+                            <StackPanel x:Name="File" Background="LightGray">
+                                <Image x:Name="EmptyFile" 
+                                       Height="48" 
+                                       Width="48" 
+                                       Source="{StaticResource EmptyFile}"/>
+                                <Image x:Name="StandardFile" 
+                                       Height="48" 
+                                       Width="48" 
+                                       Source="{StaticResource StandardFile}"/>
+                            </StackPanel>
+                            <Rectangle Width="48" Height="5" x:Name="ColorBlock"/>
+                            <Popup AllowsTransparency="True" 
+                                   IsOpen="{Binding ElementName=File, Path=IsMouseOver, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" 
+                                   PlacementTarget="{Binding ElementName=FileBlockStackPanel}" 
+                                   Placement="Right" 
+                                   PopupAnimation="Slide">
+                                <StackPanel Background="#A0D8F0">
+                                    <TextBlock Text="Block Address" Margin="2" FontWeight="SemiBold"/>
+                                    <TextBlock Text="{Binding BlockAddress}" Margin="2,0,0,0" TextAlignment="Center"/>
+                                    <TextBlock Text="File Name" Margin="2" FontWeight="SemiBold"/>
+                                    <TextBlock Text="{Binding StoredFile.Name}" Margin="2,0,0,0" TextAlignment="Center"/>
+                                </StackPanel>
+                            </Popup>
+                        </StackPanel>
+                    </Border>
+                    <DataTemplate.Triggers>
+                        <DataTrigger Binding="{Binding IsOccupied}" Value="True">
+                            <Setter Property="Background" Value="LightGreen" TargetName="File"/>
+                            <Setter Property="Height"  Value="0" TargetName="EmptyFile"/>
+                            <Setter Property="Height"  Value="48" TargetName="StandardFile"/>
+                            <Setter Property="Fill" TargetName="ColorBlock">
+                                <Setter.Value>
+                                    <SolidColorBrush Color="{Binding StoredFile.FileColor, FallbackValue=White}"/>
+                                </Setter.Value>
+                            </Setter>
+                            
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding IsOccupied}" Value="False">
+                            <Setter Property="Background" Value="LightGray" TargetName="File"/>
+                            <Setter Property="Height"  Value="48" TargetName="EmptyFile"/>
+                            <Setter Property="Height"  Value="0" TargetName="StandardFile"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding IsInUse}" Value="True">
+                            <Setter Property="Background" Value="Orange" TargetName="File"/>
+                        </DataTrigger>
+                    </DataTemplate.Triggers>
+                </DataTemplate>
+                <!-- ====================LINKED============================ -->
+                <DataTemplate x:Key="LinkedFileBlockTemplate" DataType="{x:Type Models:LinkedFileBlock}">
+                    <Border CornerRadius="4,4,4,4" 
+                            BorderBrush="LightGray" 
+                            BorderThickness="5" 
+                            Margin="3"
+                            RenderOptions.EdgeMode="Aliased">
+                        <StackPanel x:Name="FileBlockStackPanel"
+                                    Background="LightGray">
+                            <TextBlock
+                                Margin="1"
+                                FontSize="18"
+                                FontWeight="Bold"
+                                TextAlignment="Center" 
+                                Text="{Binding BlockAddress}"/>
+                            <StackPanel x:Name="File" Background="LightGray">
+                                <Image x:Name="EmptyFile" 
+                                       Height="48" 
+                                       Width="48" 
+                                       Source="{StaticResource EmptyFile}"/>
+                                <Image x:Name="StandardFile" 
+                                       Height="0" 
+                                       Width="48" 
+                                       Source="{StaticResource StandardFile}"/>
+                                <Image x:Name="PointerFile" 
+                                       Height="0" 
+                                       Width="48" 
+                                       Source="{StaticResource PointerFile}"/>
+                            </StackPanel>
+                            <Rectangle Width="48" Height="5" x:Name="ColorBlock"/>
+                            <Popup AllowsTransparency="True" 
+                                   IsOpen="{Binding ElementName=File, Path=IsMouseOver, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" 
+                                   PlacementTarget="{Binding ElementName=FileBlockStackPanel}" 
+                                   Placement="Right" 
+                                   PopupAnimation="Slide">
+                                <StackPanel Background="#A0D8F0">
+                                    <TextBlock Text="Block Address" Margin="2" FontWeight="SemiBold"/>
+                                    <TextBlock Text="{Binding BlockAddress}" Margin="2,0,0,0" TextAlignment="Center"/>
+                                    <TextBlock Text="File Name" Margin="2" FontWeight="SemiBold"/>
+                                    <TextBlock Text="{Binding StoredFile.Name}" Margin="2,0,0,0" TextAlignment="Center"/>
+                                    <TextBlock Text="Next Block" Margin="2" FontWeight="SemiBold" Visibility="{Binding HasPointer, Converter={StaticResource BoolToVis}}"/>
+                                    <TextBlock Text="{Binding NextBlockOfFile}" Margin="2,0,0,0" TextAlignment="Center" Visibility="{Binding HasPointer, Converter={StaticResource BoolToVis}}"/>
+                                </StackPanel>
+                            </Popup>
+                        </StackPanel>
+                    </Border>
+                    <DataTemplate.Triggers>
+                        <DataTrigger Binding="{Binding IsOccupied}" Value="True">
+                            <Setter Property="Background" Value="LightGreen" TargetName="File"/>
+                            <Setter Property="Height"  Value="0" TargetName="EmptyFile"/>
+                            <Setter Property="Height"  Value="48" TargetName="StandardFile"/>
+                            <Setter Property="Fill" TargetName="ColorBlock">
+                                <Setter.Value>
+                                    <SolidColorBrush Color="{Binding StoredFile.FileColor, FallbackValue=White}"/>
+                                </Setter.Value>
+                            </Setter>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding IsOccupied}" Value="False">
+                            <Setter Property="Background" Value="LightGray" TargetName="File"/>
+                            <Setter Property="Height"  Value="48" TargetName="EmptyFile"/>
+                            <Setter Property="Height"  Value="0" TargetName="StandardFile"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding HasPointer}" Value="True">
+                            <Setter Property="Background" Value="LightGreen" TargetName="File"/>
+                            <Setter Property="Height"  Value="0" TargetName="EmptyFile"/>
+                            <Setter Property="Height"  Value="0" TargetName="StandardFile"/>
+                            <Setter Property="Height"  Value="48" TargetName="PointerFile"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding IsInUse}" Value="True">
+                            <Setter Property="Background" Value="Orange" TargetName="File"/>
+                        </DataTrigger>
+                        
+                    </DataTemplate.Triggers>
+                </DataTemplate>
+                <!-- ====================INDEXED============================ -->
+                <DataTemplate x:Key="IndexedFileBlockTemplate" DataType="{x:Type Models:IndexedFileBlock}">
+                    <Border CornerRadius="4,4,4,4" 
+                            BorderBrush="LightGray" 
+                            BorderThickness="5" 
+                            Margin="3"
+                            RenderOptions.EdgeMode="Aliased">
+                        <StackPanel x:Name="FileBlockStackPanel"
+                                    Background="LightGray">
+                            <TextBlock
+                                Margin="1"
+                                FontSize="18"
+                                FontWeight="Bold"
+                                TextAlignment="Center" 
+                                Text="{Binding BlockAddress}"/>
+                            <StackPanel x:Name="File" Background="LightGray">
+                                <Image x:Name="EmptyFile" 
+                                       Height="48" 
+                                       Width="48" 
+                                       Source="{StaticResource EmptyFile}"/>
+                                <Image x:Name="StandardFile" 
+                                       Height="0" 
+                                       Width="48" 
+                                       Source="{StaticResource StandardFile}"/>
+                                <Image x:Name="IndexFile" 
+                                       Height="0" 
+                                       Width="48" 
+                                       Source="{StaticResource IndexFile}"/>
+                            </StackPanel>
+                            <Rectangle Width="48" Height="5" x:Name="ColorBlock"/>
+                            <Popup AllowsTransparency="True" 
+                                   IsOpen="{Binding ElementName=File, Path=IsMouseOver, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" 
+                                   PlacementTarget="{Binding ElementName=FileBlockStackPanel}" 
+                                   Placement="Right" 
+                                   PopupAnimation="Slide">
+                                <StackPanel Background="#A0D8F0">
+                                    <TextBlock Text="Block Address" Margin="2" FontWeight="SemiBold"/>
+                                    <TextBlock Text="{Binding BlockAddress}" Margin="2,0,0,0" TextAlignment="Center"/>
+                                    <TextBlock Text="File Name" Margin="2" FontWeight="SemiBold"/>
+                                    <TextBlock Text="{Binding StoredFile.Name}" Margin="2,0,0,0" TextAlignment="Center"/>
+                                    <TextBlock Text="Index" Margin="2" FontWeight="SemiBold" TextAlignment="Left" Visibility="{Binding IsIndexBlock, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                    <ItemsControl ItemsSource="{Binding IndexBlockList}" HorizontalAlignment="Center" HorizontalContentAlignment="Center">
+                                        
+                                    </ItemsControl>
+                                </StackPanel>
+                            </Popup>
+                        </StackPanel>
+                    </Border>
+                    <DataTemplate.Triggers>
+                    <DataTrigger Binding="{Binding IsOccupied}" Value="True">
+                        <Setter Property="Background" Value="LightGreen" TargetName="File"/>
+                        <Setter Property="Height"  Value="0" TargetName="EmptyFile"/>
+                        <Setter Property="Height"  Value="48" TargetName="StandardFile"/>
+                            <Setter Property="Fill" TargetName="ColorBlock">
+                                <Setter.Value>
+                                    <SolidColorBrush Color="{Binding StoredFile.FileColor, FallbackValue=White}"/>
+                                </Setter.Value>
+                            </Setter>
+                        </DataTrigger>
+                    <DataTrigger Binding="{Binding IsOccupied}" Value="False">
+                        <Setter Property="Background" Value="LightGray" TargetName="File"/>
+                        <Setter Property="Height"  Value="48" TargetName="EmptyFile"/>
+                        <Setter Property="Height"  Value="0" TargetName="StandardFile"/>
+                    </DataTrigger>
+                        <DataTrigger Binding="{Binding IsIndexBlock}" Value="True">
+                            <Setter Property="Height"  Value="0" TargetName="EmptyFile"/>
+                        <Setter Property="Height"  Value="0" TargetName="StandardFile"/>
+                        <Setter Property="Height"  Value="48" TargetName="IndexFile"/>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding IsInUse}" Value="True">
+                        <Setter Property="Background" Value="Orange" TargetName="File"/>
+                    </DataTrigger>
+
+                    </DataTemplate.Triggers>
+                </DataTemplate>
+            </ListBox.Resources>
+            <!--Convert Standard Panel Template to Wrap Panel-->
+            <ListBox.ItemsPanel >
+                <ItemsPanelTemplate>
+                    <WrapPanel/>
+                </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+            
+            <ListBox.ItemTemplateSelector>
+                <Services:BlockDataTemplateSelector FileBlockTemplate="{StaticResource FileBlockTemplate}" 
+                                                    ContiguousFileBlockTemplate="{StaticResource ContiguousFileBlockTemplate}"
+                                                    IndexedFileBlockTemplate="{StaticResource IndexedFileBlockTemplate}"
+                                                    LinkedFileBlockTemplate="{StaticResource LinkedFileBlockTemplate}"/>
+            </ListBox.ItemTemplateSelector>       
+        </ListBox>
+    </Grid>
+</UserControl>

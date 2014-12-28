@@ -1,0 +1,207 @@
+﻿<UserControl x:Class="AllocationMethods.View.SettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:Model="clr-namespace:AllocationMethods.Model"
+             mc:Ignorable="d" 
+             d:DesignHeight="1000" d:DesignWidth="450"
+             DataContext="{Binding Settings, Source={StaticResource Locator}}">
+
+    <UserControl.Resources>
+        <ObjectDataProvider x:Key="AllocationTypes" 
+                        MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="Model:AllocationType" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+    </UserControl.Resources>
+
+    <Expander Header="Settings" Grid.Row="1" FontSize="24" FontWeight="Bold" Width="400" >
+        <StackPanel Margin="8"
+                    IsEnabled="{Binding IsEnabled}">
+
+            <TextBlock Text="Simulation" Style="{StaticResource BoldPropertyTextBlockStyle}"/>
+            <Grid x:Name="SimulationSettings"
+              Margin="8,0,0,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <!-- Row 0 -->
+                <TextBlock Grid.Row="0" Grid.Column="0" 
+                       Style="{StaticResource PropertyTextBlockStyle}" 
+                       Text="Allocation Type" Margin="5,10"/>
+                <ComboBox Grid.Row="0" Grid.Column="1" Margin="5" Grid.ColumnSpan="2"
+                          TextElement.FontWeight="Normal"
+                      SelectedValue="{Binding AllocationMethod, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                      
+                      Style="{StaticResource MetroComboBoxStyle}"
+                      ItemsSource="{ Binding Source={StaticResource AllocationTypes}}"/>
+                <!-- Row 1 -->
+                <TextBlock Grid.Row="1" Grid.Column="0" 
+                       Style="{StaticResource PropertyTextBlockStyle}" 
+                       Text="Random Action Every" Margin="5,8" />
+                <TextBox  Grid.Row="1" Grid.Column="1"
+                      Text="{Binding RandomActionAfterBlankTicks}" 
+                      Style="{StaticResource SettingTextBoxStyle}"/>
+                <TextBlock Grid.Row="1" Grid.Column="2" 
+                       Style="{StaticResource PropertyTextBlockStyle}" 
+                       Text="Tick(s)" Margin="5,8" />
+                <!-- Row 2 -->
+                <TextBlock Grid.Row="2" Grid.Column="0"
+                       Style="{StaticResource PropertyTextBlockStyle}" 
+                       Text="Store Frequency" />
+                <Slider Grid.Row="2" Grid.Column="1"
+                        Value="{Binding StoreFrequencyLevel}"
+                        IsSnapToTickEnabled="True"
+                        TickFrequency="1"
+                        Minimum="0"
+                         Interval="1"
+                        Maximum="9" 
+                        Margin="4" Grid.ColumnSpan="2">
+                    <Slider.ToolTip>
+                        <TextBlock Text="{Binding StoreFrequencyLevel}"/>
+                    </Slider.ToolTip>
+                </Slider>
+                <TextBlock Grid.Row="2" Grid.Column="0" Visibility="Collapsed"
+                       Style="{StaticResource PropertyTextBlockStyle}" 
+                       Text="File Creation Frequency" Margin="5,13" />
+                <TextBox   Grid.Row="2" Grid.Column="1" Visibility="Collapsed"
+                          IsEnabled="False"
+                      Text="{Binding WriteFreqency}" 
+                      Style="{StaticResource SettingTextBoxStyle}" Grid.ColumnSpan="2" Margin="5,13"/>
+                <!-- Row 3 -->
+                <TextBlock Grid.Row="3" Grid.Column="0" Visibility="Collapsed"
+                       Style="{StaticResource PropertyTextBlockStyle}" 
+                       Text="File Deletion Frequency" Margin="5,0" Grid.RowSpan="3" />
+                <TextBox  Grid.Row="3" Grid.Column="1" Visibility="Collapsed"
+                          IsEnabled="False"
+                      Style="{StaticResource SettingTextBoxStyle}" Grid.ColumnSpan="2" Margin="5,0" Grid.RowSpan="3"/>
+                <!-- Row 4 -->
+                <TextBlock Grid.Row="4" Grid.Column="0" Visibility="Collapsed"
+                       Style="{StaticResource PropertyTextBlockStyle}" 
+                       Text="File Access Frequency" Margin="5,0" Grid.RowSpan="2" />
+                <TextBox  Grid.Row="4" Grid.Column="1" Visibility="Collapsed"
+                          IsEnabled="False"
+                      Style="{StaticResource SettingTextBoxStyle}" Grid.ColumnSpan="2" Margin="5,0" Grid.RowSpan="2"/>
+                <!-- Row 5 -->
+                <TextBlock Grid.Row="5" Grid.Column="0" Visibility="Collapsed"
+                       Style="{StaticResource PropertyTextBlockStyle}" 
+                       Text="File Release Frequency" Margin="5,0" />
+                <TextBox  Grid.Row="5" Grid.Column="1" Visibility="Collapsed"
+                          IsEnabled="False"
+                      Style="{StaticResource SettingTextBoxStyle}" Grid.ColumnSpan="2" Margin="5,0"/>
+            </Grid>
+            <TextBlock Text="Disk" Style="{StaticResource BoldPropertyTextBlockStyle}"/>
+            <Grid x:Name="DiskSettings"
+                  Margin="8,0,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <!--Row 0-->
+                <!-- Row 5 -->
+                <TextBlock Grid.Row="0" Grid.Column="0" 
+                       Style="{StaticResource PropertyTextBlockStyle}" 
+                       Text="Total Size" Margin="5,8" />
+                <TextBox  Grid.Row="0" Grid.Column="1"
+                          Text="{Binding DiskBlockCount}"
+                          Style="{StaticResource SettingTextBoxStyle}"/>
+                <TextBlock Grid.Row="0" Grid.Column="2" 
+                       Style="{StaticResource PropertyTextBlockStyle}" 
+                       Text="Block(s)" Margin="5,8" />
+                <!-- Row 1 -->
+                <TextBlock Grid.Row="1" Grid.Column="0" Visibility="Collapsed"
+                       Style="{StaticResource PropertyTextBlockStyle}" 
+                       Text="Block Size" Margin="5,0" Grid.RowSpan="4" />
+                <TextBox  Grid.Row="1" Grid.Column="1" Visibility="Collapsed"
+                          IsEnabled="False"
+                      Style="{StaticResource SettingTextBoxStyle}" Grid.ColumnSpan="2" Margin="5,0" Grid.RowSpan="4"/>
+                <!-- Row 2 -->
+                <TextBlock Grid.Row="3" Grid.Column="0" Visibility="Collapsed"
+                       Style="{StaticResource PropertyTextBlockStyle}" 
+                       Text="Disk Size" Margin="5,0" Grid.RowSpan="2" />
+                <TextBox  Grid.Row="3" Grid.Column="1" Visibility="Collapsed"
+                          IsEnabled="False"
+                      Style="{StaticResource SettingTextBoxStyle}" Grid.ColumnSpan="2" Margin="5,0" Grid.RowSpan="2"/>
+                <!-- Row 3 -->
+                <TextBlock Grid.Row="4" Grid.Column="0" Visibility="Collapsed"
+                       Style="{StaticResource PropertyTextBlockStyle}" 
+                       Text="Pointer Size" Margin="5,0" />
+                <TextBox  Grid.Row="4" Grid.Column="1" Visibility="Collapsed"
+                          IsEnabled="False" 
+                      Style="{StaticResource SettingTextBoxStyle}" Grid.ColumnSpan="2" Margin="5,0"/>
+
+            </Grid>
+            <TextBlock Text="File" Style="{StaticResource BoldPropertyTextBlockStyle}"/>
+            <Grid x:Name="FileSettings"
+                Margin="8,0,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <!-- Row 0 -->
+                <TextBlock Grid.Row="0" Grid.Column="0" 
+                       Style="{StaticResource PropertyTextBlockStyle}" 
+                       Text="Minimum Size" Margin="5,8" />
+                <TextBox  Grid.Row="0" Grid.Column="1"  
+                          Text="{Binding MinimumFileSize}"
+                      Style="{StaticResource SettingTextBoxStyle}"/>
+                <TextBlock Grid.Row="0" Grid.Column="2" 
+                       Style="{StaticResource PropertyTextBlockStyle}" 
+                       Text="Block(s)" Margin="5,8" />
+                <!-- Row 1 -->
+                <TextBlock Grid.Row="1" Grid.Column="0" 
+                       Style="{StaticResource PropertyTextBlockStyle}" 
+                       Text="Maximum Size" Margin="5,8" />
+                <TextBox  Grid.Row="1" Grid.Column="1" 
+                          Text="{Binding MaximumFileSize}"
+                      Style="{StaticResource SettingTextBoxStyle}"/>
+                <TextBlock Grid.Row="1" Grid.Column="2" 
+                       Style="{StaticResource PropertyTextBlockStyle}" 
+                       Text="Block(s)" Margin="5,8" />
+            </Grid>
+            <TextBlock Text="{Binding SaveText}" FontWeight="SemiBold" Style="{StaticResource PropertyTextBlockStyle}" HorizontalAlignment="Center"/>
+            <Grid x:Name="Buttons">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0" 
+                        Content="Save"
+                        Command="{Binding Save}"
+                        Margin="5" Width="75" Height="30"/>
+                <Button Grid.Column="1" 
+                        Content="Reset" 
+                        Command="{Binding Reset}"
+                        Margin="5" Width="75" Height="30"/>
+            </Grid>
+
+
+        </StackPanel>
+    </Expander>
+</UserControl>

@@ -1,0 +1,12 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ResourceDictionary.MergedDictionaries>
+        <!--Images-->
+        <ResourceDictionary>
+            <BitmapImage x:Key="EmptyFile" UriSource="Images\EmptyFile.png"/>
+            <BitmapImage x:Key="IndexFile" UriSource="Images\IndexFile.png"/>
+            <BitmapImage x:Key="PointerFile" UriSource="Images\PointerFile.png"/>
+            <BitmapImage x:Key="StandardFile" UriSource="Images\StandardFile.png"/>
+        </ResourceDictionary>
+    </ResourceDictionary.MergedDictionaries>
+</ResourceDictionary>

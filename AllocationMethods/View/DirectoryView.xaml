@@ -1,0 +1,71 @@
+﻿<UserControl x:Class="AllocationMethods.View.DirectoryView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:Services="clr-namespace:AllocationMethods.Services"
+             mc:Ignorable="d" 
+             xmlns:Models="clr-namespace:AllocationMethods.Model"
+             DataContext="{Binding Directory, Source={StaticResource Locator}}"
+             HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+             d:DesignHeight="1000" d:DesignWidth="500">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="64"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <!--======TITLE ======-->
+        <TextBlock
+            Grid.Row="0"
+            Text="Directory"
+            Style="{StaticResource TitleTextBlockStyle}"/>
+        <!--======DESCRIPTION ======-->
+        <TextBlock Margin="4" 
+                   Grid.Row="1" 
+                   TextWrapping="WrapWithOverflow" 
+                   Text="Represents the directory. Each line is an entry"/>
+        <!--======LISTBOX ======-->
+        <DataGrid ItemsSource="{Binding Directory}"
+                  AutoGenerateColumns="False"
+                  Grid.Row="2">
+            <DataGrid.Columns>
+                <DataGridTemplateColumn x:Name="FileName"  Header="File Name" Width="Auto">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding FileName}" TextAlignment="Center"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn x:Name="Start"  Header="Start" Width="Auto">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding StartingFileBlockAddress, FallbackValue=''}" TextAlignment="Center"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn x:Name="End"  Header="End" Width="Auto" >
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding EndingFileBlockAddress, FallbackValue=''}" TextAlignment="Center"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn x:Name="Length"  Header="Length" Width="Auto"  >
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding FileBlockLength, FallbackValue=''}" TextAlignment="Center"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn x:Name="IndexBlock"  Header="Index Block Address" Width="Auto" >
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding IndexBlockReference, FallbackValue=''}" TextAlignment="Center"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</UserControl>
