@@ -12,8 +12,7 @@
         d:DesignHeight="800" d:DesignWidth="1200"
         Title="Allocation Methods Simulation by Keith Fung and Matt Mills"
         DataContext="{Binding Main, Source={StaticResource Locator}}">
-
-    <Grid x:Name="LayoutRoot">
+    <Grid x:Name="GridLayout">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="Auto"/>
